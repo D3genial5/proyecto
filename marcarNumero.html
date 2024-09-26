@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marcar Número Manualmente</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css"> <!-- Usa el mismo archivo CSS para compartir estilos -->
+</head>
+<body>
+    <h1>Seleccionar Número Manualmente</h1>
+
+    <div id="grid-numeros-container">
+        <div id="grid-numeros"></div> <!-- Este es el contenedor para el tablero -->
+    </div>
+
+    <button id="activarSeleccionAuto" class="btn">Activar Selección Automática</button>
+
+    <script>
+        const { ipcRenderer } = require('electron');
+        let modoAutomatico = false; // Estado inicial del modo automático
+
+        // Cargar el estado del bingo al abrir la ventana
+        ipcRenderer.on('estado-bingo', (event, estado) => {
+            generarTablero(estado.numerosExtraidos); // Sincronizar los números extraídos
+        });
+
+        // Actualizar en tiempo real cuando se recibe una actualización de la ventana principal
+        ipcRenderer.on('estado-actualizado', (event, numerosExtraidos) => {
+            generarTablero(numerosExtraidos); // Actualizar el tablero en la ventana espejo
+        });
+
+        // Función para generar el tablero de bingo y tachar los números extraídos
+        function generarTablero(numerosExtraidos) {
+            const gridNumeros = document.getElementById("grid-numeros");
+            gridNumeros.innerHTML = ""; // Limpiar el contenedor
+
+            for (let i = 1; i <= 10; i++) {
+                const columna = document.createElement("div");
+                columna.classList.add("columna");
+
+                for (let j = 0; j < 9; j++) {
+                    const numeroBingo = i + j * 10;
+                    if (numeroBingo <= 90) {
+                        const numero = document.createElement("div");
+                        numero.classList.add("numero");
+                        numero.textContent = numeroBingo;
+
+                        // Marcar si ya fue extraído en el bingo principal
+                        if (numerosExtraidos.includes(numeroBingo)) {
+                            numero.classList.add("extraido"); // Clase para tachar el número
+                        }
+
+                        numero.addEventListener('click', () => {
+                            ipcRenderer.send('marcar-numero-manualmente', numeroBingo);
+                        });
+
+                        columna.appendChild(numero);
+                    }
+                }
+                gridNumeros.appendChild(columna);
+            }
+        }
+
+        // Función para actualizar el botón de selección automática
+        function actualizarBotonSeleccionAuto() {
+            const boton = document.getElementById('activarSeleccionAuto');
+            boton.textContent = modoAutomatico ? "Desactivar Selección Automática" : "Activar Selección Automática";
+        }
+
+        // Activar o desactivar el modo automático
+        document.getElementById('activarSeleccionAuto').addEventListener('click', () => {
+            modoAutomatico = !modoAutomatico;
+            ipcRenderer.send('activar-modo-automatico');
+            actualizarBotonSeleccionAuto();
+        });
+
+        // Reiniciar el juego cuando se recibe el evento desde la ventana principal
+        ipcRenderer.on('reiniciar-juego', () => {
+            generarTablero([]); // Regenerar el tablero limpio sin números extraídos
+        });
+
+        // Manejo del modo oscuro
+        const modoOscuroBtn = document.getElementById("modoOscuroBtn");
+
+        // Función para alternar el modo oscuro
+        function alternarModoOscuro() {
+            document.body.classList.toggle('modo-oscuro');
+            const modoOscuroActivado = document.body.classList.contains('modo-oscuro');
+            localStorage.setItem('modoOscuro', modoOscuroActivado);
+            modoOscuroBtn.textContent = modoOscuroActivado ? 'Desactivar Modo Oscuro' : 'Activar Modo Oscuro';
+            ipcRenderer.send('actualizar-modo-oscuro', modoOscuroActivado);
+        }
+
+        // Verificar si ya hay un modo almacenado en localStorage
+        if (localStorage.getItem('modoOscuro') === 'true') {
+            document.body.classList.add('modo-oscuro');
+            modoOscuroBtn.textContent = 'Desactivar Modo Oscuro';
+        }
+
+        // Alternar el modo oscuro cuando se hace clic en el botón
+        if (modoOscuroBtn) {
+            modoOscuroBtn.addEventListener('click', alternarModoOscuro);
+        }
+
+        // Recibir la actualización del modo oscuro desde la ventana principal
+        ipcRenderer.on('actualizar-modo-oscuro', (event, modoOscuroActivado) => {
+            if (modoOscuroActivado) {
+                document.body.classList.add('modo-oscuro');
+                modoOscuroBtn.textContent = 'Desactivar Modo Oscuro';
+            } else {
+                document.body.classList.remove('modo-oscuro');
+                modoOscuroBtn.textContent = 'Activar Modo Oscuro';
+            }
+        });
+    </script>
+</body>
+</html>

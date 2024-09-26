@@ -1,0 +1,330 @@
+/* Estilo global */
+body {
+    font-family: 'Nunito', sans-serif;
+    margin: 0;
+    padding: 20px;
+}
+
+/* Estilo para el modo oscuro */
+body.modo-oscuro {
+    background-color: #1e1e1e;
+    color: #ffffff;
+}
+
+/* Contenedor principal del bingo */
+.container {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    grid-template-rows: auto 1fr auto;
+    gap: 10px;
+    height: 100vh;
+    padding: 10px;
+}
+
+/* Botones generales */
+button {
+    margin: 10px;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 15px;
+    background-color: #f1f1f1;
+    color: #000;
+    border: 1px solid #ccc;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+button:hover {
+    background-color: #ff4b4b;
+    color: white;
+}
+
+body.modo-oscuro button {
+    background-color: #444;
+    color: #fff;
+    border: 1px solid #fff;
+}
+
+body.modo-oscuro button:hover {
+    background-color: #f39c12;
+}
+
+/* Campos de entrada (input) */
+input[type="text"], input[type="number"] {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 15px;
+    background-color: #f1f1f1;
+    color: #000;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+body.modo-oscuro input[type="text"], body.modo-oscuro input[type="number"] {
+    background-color: #2d2d2d;
+    color: white;
+    border: 1px solid #fff;
+}
+
+/* Estilos para el tablero de números */
+#grid-numeros-container {
+    grid-column: 1 / 2; /* Primera columna */
+    grid-row: 1 / 3; /* Ocupar las dos filas de la primera columna */
+    height: 100%; /* Ocupar toda la altura */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 600px;
+    margin-left: 0;
+}
+
+/* Estilos para el contenedor del grid de números */
+#grid-numeros {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr); /* 10 columnas */
+    grid-template-rows: repeat(9, 1fr); /* 9 filas */
+    gap: 10px; /* Espaciado entre las celdas */
+    justify-items: center; /* Centrar los elementos dentro de cada celda */
+    align-items: center; /* Alinear verticalmente */
+    width: 100%;
+    max-width: 600px; /* Limitar el ancho máximo */
+}
+
+.numero {
+    width: 50px;
+    height: 50px;
+    background-color: #f1f1f1;
+    text-align: center;
+    line-height: 50px;
+    border: 2px solid #ccc;
+    font-weight: bold;
+    font-size: 20px;
+    border-radius: 5px;
+    color: #000;
+}
+
+/* Para los números extraídos */
+.numero.extraido {
+    background-color: #ff4b4b;
+    color: white;
+    font-weight: bold;
+}
+
+body.modo-oscuro .extraido {
+    background-color: #ff4b4b;
+    color: #ffffff;
+}
+
+/* Sección de últimos números */
+#ultimos-numeros {
+    grid-column: 2 / 3; /* Segunda columna */
+    grid-row: 1 / 2; /* Primera fila */
+    text-align: center;
+    min-height: 300px;
+}
+
+/* Lista de últimos números */
+#lista-numeros {
+    list-style-type: none;
+    padding: 0;
+    margin-bottom: 20px;
+}
+
+#lista-numeros li {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    margin: 10px auto;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+
+/* Números extraídos en diferentes tamaños */
+.numero-extraido {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+    line-height: 40px;
+    background-color: #ff4b4b;
+    transition: transform 0.3s;
+}
+
+/* Mover los premios debajo de los últimos números */
+#premios {
+    margin-top: 20px; /* Ajustar margen superior para que quede justo debajo de los números */
+    text-align: center;
+}
+
+#premios ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.numero-extraido:nth-child(1) {
+    width: 80px;
+    height: 80px;
+    font-size: 25px;
+    background-color: #ff4b4b;
+}
+
+.numero-extraido:nth-child(2) {
+    width: 70px;
+    height: 70px;
+    font-size: 20px;
+    background-color: #f7d348;
+}
+
+.numero-extraido:nth-child(3) {
+    width: 55px;
+    height: 55px;
+    font-size: 18px;
+    background-color: #4b8bff;
+}
+
+.numero-extraido:nth-child(4) {
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+    background-color: #ae49ff;
+    display: none;
+}
+
+/* Resaltado de filas completadas */
+.resaltado {
+    background-color: yellow;
+}
+
+.opaco {
+    opacity: 0.5;
+}
+
+.celda.marcada {
+    background-color: red;
+    color: white;
+}
+
+/* Overlay */
+#overlay {
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    font-size: 110px;
+    width: 150px;
+    height: 150px;
+    padding: 20px;
+    display: none;
+    z-index: 1000;
+    text-align: center;
+    border-radius: 50%;
+    /* Centrando el overlay */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Botón de alternancia de modo oscuro */
+.switch-container {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.switch-input {
+    display: none;
+}
+
+.switch-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 60px;
+    height: 30px;
+    background-color: #ccc;
+    border-radius: 30px;
+    position: relative;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.switch-label .icono-sol, .switch-label .icono-luna {
+    position: absolute;
+    font-size: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.icono-sol {
+    left: 10px;
+    color: orange;
+}
+
+.icono-luna {
+    right: 10px;
+    color: yellow;
+}
+
+.switch-slider {
+    position: absolute;
+    width: 26px;
+    height: 26px;
+    background-color: white;
+    border-radius: 50%;
+    top: 2px;
+    left: 2px;
+    transition: left 0.3s ease;
+}
+
+.switch-input:checked + .switch-label .switch-slider {
+    left: 32px;
+    background-color: white;
+}
+
+.switch-input:checked + .switch-label {
+    background-color: #333;
+}
+
+.modo-oscuro .switch-label {
+    background-color: #333;
+}
+
+.carton {
+    border: 1px solid #333;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+
+.fila {
+    display: flex;
+    justify-content: space-between;
+}
+
+.celda {
+    width: 40px;
+    height: 40px;
+    border: 1px solid #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
+
+#notificaciones {
+    background-color: #222;
+    color: white;
+    padding: 10px;
+    margin-top: 20px;
+    border-radius: 5px;
+    font-size: 18px;
+    text-align: center;
+}
+
+#mensajeNotificacion {
+    font-size: 24px;
+    font-weight: bold;
+}
